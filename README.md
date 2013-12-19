@@ -1,0 +1,4 @@
+shells-project
+==============
+
+Dumb project
