@@ -1,0 +1,200 @@
+Learnix
+by Amcomiate
+
+
+ROR @ web [frontend]
+Ruby @ scripts [backend]
+MySQL DB.
+
+Complete segregation between frontend and backend!!
+
+What?
+Not just another shell host.
+Suffice to say, we're not even a shell host, it's just a part of the 
+experience.
+
+We are a mash up of BBS'ing (sharing info... ttyrec), MUD's (quests) and 
+a lotta IRC (tut help).
+We ARE social!
+
+Our goal: Give new linux wannabe-users a heads on experience at the 
+practicality, and ol' folks some help (or get help from them).
+We will try and let one know how linux can provide solutions (CIBD 
+service); Our priority being on teaching good practices, and letting one 
+"taste" linux.
+
+We're NOT making it a teaching hub, instead it's a social hub.
+
+We will provide the fuel in terms of tuts, but we hope that the fun 
+part, the IRC chats, the quest'ing, the sharing your ttyrec 
+adventures, and mingling with other users will provide the final thrust.
+________
+
+Account creation:
+Account task validation: Copy/save irssi IRC script
+Implementation:
+Webpage: account creation: username, pass, email, reason, user_group 
+choose.
+add user to new_user file ->   //
+ssh account for 20 minutes to complete task.
+account expire after 20 minutes.
+Webpage Account reactivate for 10 minutes... to get more time for 
+task completion.
+<Free_For_all_ENDS>
+<Validation>
+Webpage task complete button -> 
+moves user to pending_valid file from new_user file ->
+script checks (diff user_script expect-script) ->
+sends diff + user -> admin email.
+
+Pending admin validation; admin modify/check script -> send email to 
+user, validated.
+
+Account non-complete 1 day deletion.  //
+Implementation: Check new_user file and delete if more than 1 day.
+
+Account autodeletion after 30 days inactivity.
+Account autoexpire, after 7 days no login.
+Account task non-completeion one month autoexpire
+Implementation:
+check task file. expire if more than one month.
+
+TASK: Set up script to connect to irssi.
+nano irc.sh
+<copy items to file from webpage:
+#/bin/bash
+irssi -c <serv> -p <port> -n <nick>
+>
+ctrl + x -> save
+
+Unvalidated account restricted to:
+30 mins
+Software: nano, ping, nmap
+________
+
+Features:
+1.) Ch3ats: Users alloted 'x'(see race) ch3ats on admin account 
+validation.
+Can exchange for hints/answers from other users.
+User cheat files stored in cheats directory.
+Each file contains cheat transfer history with date, to prevent 
+cheating. CASE: user A transfers cheats, user B denies reveiving.
+
+Implementation: shell command to transfer and check cheats. Reads first 
+instance from cheat file to get cheats_now.
+Adds +'x' to cheat receivers file, deletes from cheat senders.
+syntax: cheat <send> <username>; cheat -> gives your cheats.
+
+Cheats_total file
+
+Admin: unlimited ch3ats.
+
+Can get cheats from admins for good reasons for use, or suggestions of 
+tuts; Good behaviour, help monitor shell.
+Ch3ats can also be used to request VPS with shallower reason, and more 
+perks.
+
+2.) Quest:
+Final_quest: Get access to old learnix.. find hidden file using root 
+user.
+Wargames from Lydia.. modified to resemble quest.
+
+3.) Learning Tuts:
+Tut options on login banner.
+learner, intermediate, pro.
+Complete ateast one task/month, else expire account.
+Once task completed, admins will check:
+
+Why tuts have no ch3ats? We do not want users to do tuts for gaining 
+something in return. We want them to do tuts if they like it... if they 
+have felt a taste for tuts.
+
+Tuts suggestions from users.
+
+Implementation:
+Files:
+task: contains usernames pending task completion.
+On user completion of task, admin checks if user has done task for 
+his "race" -> 
++ if OK runs task_completed command in shell -> deletes username from 
+'task' file.
++ if not -> user told to fix.
+
+cron script to expire accounts if user in 'task' file and more than one 
+month.
+
+tuts:
+
+* Bash BASICS: cd, rm, mkdir....
+
+* Using screen: 
+screen -r/d/x; (ctrl + a) c/w/1...9../d; exit/ctrl+D.
+
+* Using irssi
+
+4.) Users [codenamed: Race]:
+Pro [codenamed: wizard]: seasoned Linux user: tasks like 'using GIT'. 
+Can opt for 
+Intermediate (using 1 cheat)
+ch3ats_start: 3
+
+Intermediate [codenamed: nymph]: Casual learnix user wanting to learn 
+shell. Can opt for 
+Pro or learner (using 1 cheat)
+ch3ats_start: 2
+
+Learner [codenamed: apprentice]: Newbie user, not introduced to linux. 
+Can opt for 
+any of above 
+tasks. [typical windows user]
+ch3ats_start: 1
+
+5.) "Can it be done?" (codename: CIBD) service.
+Simple help in IRC where (WIndows) users from a non-*nix background can 
+ask whether a certain task can be done (more easily) in Linux.
+Eg. Renaming files sequentially in windows requires a software program 
+which may not exist.
+Can be easily done with one line command in Linux.
+
+USED FOR future TUTs.
+
+6.) BEST Practices.
+taste good fish -> create urge to eat; NOT teach how to fish.
+Practical and day to day usage.
+
+7.) ttyrec so that users can share their attempts at the tuts, quests.
+Spoilsport?? 
+Implementation:
+Central ttyrec folder open to all users. Files NON_DELETABLE! [ask admin 
+to remove]
+can use ttyplay to replay.
+
+8.) Free VPS for further learning.
+Reason
+
+Ol' learnix as final stage of Quest... (rises one day from the abyss).
+
+** Tribute to RM/CF webpage.
+
+** Local IRC server??
+** Ports blocked??
+
+_______
+System:
+
+-- 2 servers?? non-root accounts + VPS
+
+-- Shutdown procedure:
+scheduled shutdowns for updates, and user requested (testing cron 
+scripts)
+User requests: Tentative: 3-5. Quota fill @ 10 -> shutdown.
+
+Implementation:
+30 mins account registration page offline -> "Shutdown in progress";
+Account validation and other pages online.
+shutdown
+
+-- Quota
+File size and number restriction
+CPU/RAM restriction
+Network managed by ipfw pipe/pfsense dedi.
