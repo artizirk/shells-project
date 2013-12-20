@@ -24,6 +24,7 @@ def register():
 	print 'reached register()'
 	if request.method == 'POST':
 		print 'request method right'
+		####FIXME!!! Data won't go forward at here
 		if not request.form['username']:
 			error = "You need to insert username!"
 		if not request.form['password']:
