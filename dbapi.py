@@ -36,7 +36,7 @@ class DBApi():
 		try:
 			cursor.execute(sql)
 			self.db_commit()
-			print userapi.createuser(user, passw, '/home/{}'.format(user), '/bin/bash')
+#			print userapi.createuser(user, passw, '/home/{}'.format(user), '/bin/bash')
 			return "dbapi:newuser:{}".format(user)
 		except:
 			return "dbapi:error:newuser"
@@ -49,6 +49,17 @@ class DBApi():
 			return "dbapi:commited"
 		except:
 			return "dbapi:error:commit"
+	def match_user(self, keyword):
+		sql = """SELECT * FROM USERS WHERE USERNAME '{0}'"""
+		cursor.execute(sql)
+		result = cursor.fetchall()
+		for row in result:
+			uname = row[0]
+			passw = row[1]
+			rname = row[2]
+			email = row[3]
+			result = 'dbapi:{}:{}:{}:{}'.format(uname, passw, rname, email)
+		return result
 	def search_user(self, keyword, type):
 		sql = """SELECT * FROM USERS WHERE USERNAME LIKE '{0}' OR EMAIL LIKE '{0}' OR REALNAME LIKE '{0}';""".format(keyword)
 		cursor.execute(sql)
@@ -68,7 +79,7 @@ class DBApi():
 		sql = """DELETE FROM USERS WHERE USERNAME='{0}';""".format(user)
 		cursor.execute(sql)
 		self.db_commit()
-		userapi.deluser(user)
+#		userapi.deluser(user)
 		return "dbapi:deluser:{}".format(user)
 	def list(self):
 		sql = """SELECT * FROM USERS;"""
@@ -84,5 +95,5 @@ class DBApi():
 		sql = """UPDATE USERS SET PASSWORD="{1}" WHERE USERNAME="{0}";""".format(user, passw)
 		cursor.execute(sql)
 		self.db_commit()
-		userapi.password(user, passw)
+#		userapi.password(user, passw)
 		return "dbapi:passwd:changed:{}".format(user)
