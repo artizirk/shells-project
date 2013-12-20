@@ -1,8 +1,9 @@
 #!/usr/bin/python2
-import subprocess
-
+import subprocess, dbapi
+"""
+I'm only called by DBApi!
+"""
 blacklist = [";", "$", "`", "(", ")"]
-DEBUG = False
 class UserApi():
 	def __init__(self):
 		pass
@@ -11,38 +12,31 @@ class UserApi():
 	def createuser(self, name, passw, home, shell):
 		for i in blacklist:
 			if i in name:
-				return "Invalid characters"
+				return "userapi:error:newuser:invalid"
 			if i in passw:
-				return "Invalid characters"
+				return "userapi:error:newuser:invalid"
 			if i in home:
-				return "Invalid characters"
+				return "userapi:error:newuser:invalid"
 			if i in shell:
-				return "Invalid characters"
-		data = "useradd -m -d {} -s {} {}".format(home, shell, name)
-		print "[UserApi]: Running cmd: {}".format(data)
-		if not DEBUG:
-			subprocess.call(["bash", "-c", data])
-		return "[UserApi]: User {} created with home in {}".format(name, home)
+				return "userapi:error:newuser:invalid"
+		data = "sudo useradd -m -d {} -s {} {}".format(home, shell, name)
+		subprocess.call(["bash", "-c", data], stderr=None, stdout=None)
+		return "userapi:newuser:{}:{}".format(name, home)
 		self.password(name, passw)
 	def deluser(self, user):
 		for i in blacklist:
 			if i in user:
-				return "Invalid characters"
-		#TODO: Check user from database
-		if not DEBUG:
-			subprocess.call(["userdel", "-r", user])
-		return "[UserApi]: User {} deleted".format(user)
+				return "userapi:error:deluser:invalid"
+		subprocess.call(["sudo", "userdel", "-r", user], stdout=None, stderr=None)
+		return "userapi:deluser:{}".format(user)
 	
 	def password(self, user, passw):
 		for i in blacklist:
 			if i in user:
-				return "Invalid characters"
+				return "userapi:error:passwd:invalid"
 			if i in passw:
-				return "Invalid characters"
+				return "userapi:error:passwd:invalid"
 		
-		cmd="passwd {} <<EOF\n{}\n{}\nEOF".format(user, passw, passw)
-		print "[UserApi]: Running command '{}'".format(cmd)
-		if not DEBUG:
-			subprocess.call(cmd)
-		return "[UserApi]: User '{}' password changed to {}".format(user, passw)
-
+		cmd="sudo passwd {} <<EOF\n{}\n{}\nEOF".format(user, passw, passw)
+		subprocess.call(cmd, shell=True, stdout=None, stderr=None)
+		return "userapi:password:{}:{}".format(user, passw)
