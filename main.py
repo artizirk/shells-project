@@ -4,7 +4,7 @@ import dbapi, time
 from flask import Flask, request, session, url_for, redirect, render_template, abort, g, flash, _app_ctx_stack
 
 dbapi = dbapi.DBApi()
-
+Debug = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 
@@ -17,40 +17,35 @@ def check_output(input):
 			return "invalid"
 @app.route('/')
 def home():
-	return "Hello flask :)"
+	return render_template('register.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-	return "Under construction"
+	print 'reached register()'
 	if request.method == 'POST':
+		print 'request method right'
 		if not request.form['username']:
 			error = "You need to insert username!"
 		if not request.form['password']:
 			error = "You need to insert password!" 
 		if not request.form['password'] == request.form['passwordagain']:
 			error = "Password's don't match"
-		uname = check_output(request.form['username'])
-		password = check_output(request.form['password'])
-		rname = check_output(request.form['realname'])
-		email = check_output(request.form['email'])
-		if uname == 'invalid':
-			error = 'Invalid username!'
-		if password == 'invalid':
-			error = 'Invalid password!'
-		if rname == 'invalid':
-			error = 'Invalid Real name!(Dude, you're drunk? :D)'
-		if email == 'invalid':
-			error = 'Invalid email!' 
-		if not request.form['realname']:
-			rname = "IDontHaveName"
-		if not request.form['email']:
-			email = "idonthave@email.yet"
+		print 'all forms validated'
+		uname = request.form['username']
+		password = request.form['password']
+		rname = request.form['realname']
+		email = request.form['email']
+		print 'variables set'
 		result = dbapi.adduser(uname, password, rname, email)
+		print 'user created'
 		result = result.split(':')
+		print 'result splitted'
 		if result[1] == "error":
 			error = "An error occured! A load of monkeys investigate it"
 		else:
 			flash("User {} registred! You can log in now".format(uname))
+		return redirect('/', error=error)
 	else:
-		error = "Method GET not supoorted, it's insecure for this thing ;)"
-app.run(host='0.0.0.0', port='7558')
+		return redirect('/')
+if __name__ == '__main__':
+	app.run(host='0.0.0.0', port=7558)

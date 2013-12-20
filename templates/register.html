@@ -1,7 +1,8 @@
+{% if error %}<div class=error><strong>Error:</strong> {{ error }}</div>{% endif %}
 <form action='/register' method='post'>
-Username: <input type='text' name='username' /><br>
-Password: <input type='password' name='password' /><br>
-Password again: <input type='password' name='passwordagain' /><br>
-Real name: <input type='text' name='realname' /><br>
-Email: <input type='text' name='email' /><br>
+Username: <input type='text' name='{{ request.form.username }}"' /><br>
+Password: <input type='password' name='{{ request.form.password }}"' /><br>
+Password again: <input type='password' name='{{ request.form.passwordagain }}"' /><br>
+Real name: <input type='text' name='{{ request.form.realname }}"' /><br>
+Email: <input type='text' name='{{ request.form.email }}"' /><br>
 <input type='submit' /></form>
