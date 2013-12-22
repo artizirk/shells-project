@@ -1,9 +1,9 @@
 LearnX (Py edition)
 =========
+LearnX is a project to create a easy to use interface for learning Linux/UNIX commands
 
-It's one LearniX project
-I'm doing same thing as one dude, but in python
-here's example: RoR vs. Flask/Python
+
+It is writen in Python using flask for front end and some other libs for backend
 
 
 TODO:
