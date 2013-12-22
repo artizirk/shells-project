@@ -14,29 +14,38 @@ class DBApi():
 	def __call__(self):
 		pass
 	def flush_tables(self):
-		sql = """DROP TABLE USERS;"""
+		sql = """DROP TABLE users;"""
 		cursor.execute(sql)
 		self.db_commit()
 		return "dbapi:table:flushed"
 
 	def create_tables(self):
-		sql = """CREATE TABLE USERS (
-		USERNAME CHAR(20) NOT NULL,
-		PASSWORD CHAR(100) NOT NULL,
-		REALNAME CHAR(50),
-		EMAIL CHAR(30) 
+		sql = """CREATE TABLE users (
+		username CHAR(20) NOT NULL,
+		password CHAR(100) NOT NULL,
+		realname CHAR(50),
+		email CHAR(30),
+		isadmin CHAR(3),
+		hasshell CHAR(3) 
 		);"""
 		cursor.execute(sql)
 		self.db_commit()
 		return "dbapi:table:created"
 
-	def adduser(self, user, passw, realname, email):
-		sql = """INSERT INTO USERS (USERNAME, PASSWORD, REALNAME, EMAIL)
-		VALUES ('{}', '{}', '{}', '{}');""" .format(user, passw, realname, email)
+	def adduser(self, user, passw, realname, email, isadmin, hasshell):
+		check_user = self.match_user(user)
+		check_user = check_user.split(':')
+		if not check_user[1] == 'nomatch':
+			return "dbapi:newuser:exsists:{}".format(user) 
+		isadmin = 'no'
+		hasshell = 'no'
+		sql = """INSERT INTO users (username, password, realname, email, isadmin, hasshell)
+		VALUES ('{}', '{}', '{}', '{}', '{}', '{}');""" .format(user, passw, realname, email, isadmin, hasshell)
 		try:
 			cursor.execute(sql)
 			self.db_commit()
-#			print userapi.createuser(user, passw, '/home/{}'.format(user), '/bin/bash')
+			if hasshell is 'yes':
+				print userapi.createuser(user, passw, '/home/{}'.format(user), '/bin/bash')
 			return "dbapi:newuser:{}".format(user)
 		except:
 			return "dbapi:error:newuser"
@@ -50,18 +59,25 @@ class DBApi():
 		except:
 			return "dbapi:error:commit"
 	def match_user(self, keyword):
-		sql = """SELECT * FROM USERS WHERE USERNAME '{0}'"""
+		sql = """SELECT * FROM users WHERE username='{0}'""".format(keyword)
 		cursor.execute(sql)
-		result = cursor.fetchall()
-		for row in result:
+		result = "dbapi:nomatch:{}".format(keyword)
+		results = cursor.fetchall()
+		for row in results:
 			uname = row[0]
 			passw = row[1]
 			rname = row[2]
 			email = row[3]
-			result = 'dbapi:{}:{}:{}:{}'.format(uname, passw, rname, email)
+			isadmin = row[4]
+			hasshell = row[5]
+			result = 'dbapi:{}:{}:{}:{}:{}:{}'.format(uname, passw, rname, email, isadmin, hasshell)
 		return result
+	def raw_command(self, query):
+		cursor.execute(query)
+		result = cursor.fetchall()
+		return result if result else None
 	def search_user(self, keyword, type):
-		sql = """SELECT * FROM USERS WHERE USERNAME LIKE '{0}' OR EMAIL LIKE '{0}' OR REALNAME LIKE '{0}';""".format(keyword)
+		sql = """SELECT * FROM users WHERE username LIKE '{0}' OR email LIKE '{0}' OR realname LIKE '{0}';""".format(keyword)
 		cursor.execute(sql)
 		result = "dbapi:noresult:{}".format(keyword)
 		results = cursor.fetchall()
@@ -70,30 +86,44 @@ class DBApi():
 			passw = row[1]
 			rname = row[2]
 			email = row[3]
+			isadmin = row[4]
+			hasshell = row[5]
 			if type == "server":
-				result = 'dbapi:result:server:{}:{}:{}:{}'.format(uname, passw, rname, email)
+				result = 'dbapi:result:server:{}:{}:{}:{}:{}:{}'.format(uname, passw, rname, email, isadmin, hasshell)
 			elif type == "normal":
-				result = 'dbapi:result:normal:{}:{}:{}'.format(uname, rname, email)
+				result = 'dbapi:result:normal:{}:{}:{}:{}:{}'.format(uname, rname, email, isadmin, hasshell)
 		return result
 	def deluser(self, user):
-		sql = """DELETE FROM USERS WHERE USERNAME='{0}';""".format(user)
+		check_user = self.match_user(user)
+		check_user = check_user.split(':')
+		if check_user[1] == 'nomatch':
+			return "dbapi:deluser:nosuchuser:{}".format(user)
+		sql = """DELETE FROM users WHERE username='{0}';""".format(user)
 		cursor.execute(sql)
 		self.db_commit()
-#		userapi.deluser(user)
+		if check_user[6] == 'yes':
+			print userapi.deluser(user)
 		return "dbapi:deluser:{}".format(user)
 	def list(self):
-		sql = """SELECT * FROM USERS;"""
+		sql = """SELECT * FROM users;"""
 		cursor.execute(sql)
-		results = cursor.fetchall()		 
+		results = cursor.fetchall()
 		for row in results:
 			uname = row[0]
 			passw = row[1]
 			rname = row[2]
 			email = row[3]
-			print "dbapi:list:{}:{}:{}:{}".format(uname, passw, rname, email)
+			isadmin = row[4]
+			hasshell = row[5]
+			print "dbapi:list:{}:{}:{}:{}:{}:{}".format(uname, passw, rname, email, isadmin, hasshell)
 	def change_password(self, user, passw):
-		sql = """UPDATE USERS SET PASSWORD="{1}" WHERE USERNAME="{0}";""".format(user, passw)
+		check_user = self.match_user(user)
+		check_user = check_user.split(':')
+		if check_user[1] == 'nomatch':
+			return "dbapi:passwd:nosuchuser:{}".format(user)
+		sql = """UPDATE users SET password="{1}" WHERE username="{0}";""".format(user, passw)
 		cursor.execute(sql)
 		self.db_commit()
-#		userapi.password(user, passw)
+		if check_user[6] is 'yes':
+			print userapi.password(user, passw)
 		return "dbapi:passwd:changed:{}".format(user)
