@@ -1,0 +1,12 @@
+import api
+api = api.API()
+print api.flush_tables()
+print api.create_tables()
+print api.adduser('mikroskeem', 'jdjdueudjf84jfufj38dkt', 'Mark Vainomaa', 'mikroskeem@gmail.com', 'no', 'no')
+print api.search_user('mikroskeem', 'server')
+print api.adduser('mikroskeem', 'rofl', 'lal', 'lul', 'no', 'no')
+print api.change_password('mikroskeem', 'lul')
+print api.deluser('marks')
+print api.search_user('mikroskeem', 'server')
+api.list()
+print api.db_close()
