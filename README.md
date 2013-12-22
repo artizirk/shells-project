@@ -3,7 +3,7 @@ Random shit :D
 
 It's one LearniX project
 <br>I'm doing same thing as one dude, but in python
-<br>here's example: RoR vs. Flask/Python
+<br>here's example: RoR vs. Flask/Python<br>
 TODO:<br>
 - [x] Remove daemon.py cuz it's not multi-threaded
 - [-] Migrate from socket to twistd<br>
