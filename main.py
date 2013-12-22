@@ -17,7 +17,7 @@ def check_output(input):
 			return "invalid"
 @app.route('/')
 def home():
-	return render_template('register.html')
+	return redirect('/register')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -27,8 +27,10 @@ def register():
 		####FIXME!!! Data won't go forward at here
 		if not request.form['username']:
 			error = "You need to insert username!"
+		print 'username checked'
 		if not request.form['password']:
 			error = "You need to insert password!" 
+		print 'passwd checked' 
 		if not request.form['password'] == request.form['passwordagain']:
 			error = "Password's don't match"
 		print 'all forms validated'
@@ -47,6 +49,6 @@ def register():
 			flash("User {} registred! You can log in now".format(uname))
 		return redirect('/', error=error)
 	else:
-		return redirect('/')
+		return render_template('register.html')
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', port=7558)
